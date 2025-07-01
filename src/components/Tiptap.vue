@@ -1,29 +1,3 @@
-# Vue 3 + TypeScript + Vite
-
-
-pnpm install 
-
-@tiptap/vue-3 @tiptap/pm @tiptap/starter-kit
-
-@tiptap/extension-color
-@tiptap/extension-list-item
-@tiptap/extension-text-style
-
-pnpm i @tiptap/starter-kit
-pnpm i @tiptap/extension-image
-pnpm i @tiptap/extension-task-item
-pnpm i @tiptap/extension-task-list
-pnpm i @tiptap/extension-text-align
-pnpm i @tiptap/extension-typography
-pnpm i @tiptap/extension-highlight
-pnpm i @tiptap/extension-subscript
-pnpm i @tiptap/extension-superscript
-pnpm i @tiptap/extension-underline
-pnpm i @tiptap/extension-link
-
-## Headerless Sample
-
-```html
 <template>
   <div v-if="editor" class="container">
     <div class="control-group">
@@ -257,4 +231,3 @@ export default {
   }
 }
 </style>
-```
