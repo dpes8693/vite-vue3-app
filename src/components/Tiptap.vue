@@ -68,6 +68,9 @@
         <button @click="editor.chain().focus().setColor('#958DF1').run()" :class="{ 'is-active': editor.isActive('textStyle', { color: '#958DF1' }) }">
           Purple
         </button>
+        <button @click="toggleTheme" :aria-label="`Switch to ${isDarkMode ? 'light' : 'dark'} mode`" title="Toggle Theme">
+          {{ isDarkMode ? '🌙' : '☀️' }}
+        </button>
       </div>
     </div>
     <br/>
@@ -83,9 +86,23 @@ import TextStyle from '@tiptap/extension-text-style'
 import StarterKit from '@tiptap/starter-kit'
 import { Editor, EditorContent } from '@tiptap/vue-3'
 
+// dark mode 狀態
+const isDarkMode = ref(false)
+const toggleTheme = () => {
+  isDarkMode.value = !isDarkMode.value
+  document.documentElement.classList.toggle('dark', isDarkMode.value)
+}
+const detectTheme = () => {
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+  const hasDarkMeta = !!document.querySelector('meta[name="color-scheme"][content="dark"]')
+  isDarkMode.value = hasDarkMeta || prefersDark
+  document.documentElement.classList.toggle('dark', isDarkMode.value)
+}
+
 const editor = ref<Editor | null>(null)
 
 onMounted(() => {
+  detectTheme()
   editor.value = new Editor({
     extensions: [
       Color.configure({ types: [TextStyle.name, ListItem.name] }),
@@ -123,6 +140,22 @@ onMounted(() => {
       </blockquote>
     `,
   })
+
+  // 監聽系統主題變化
+  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+  const handleThemeChange = () => {
+    if (!document.documentElement.classList.contains('dark') &&
+      !document.documentElement.classList.contains('light')) {
+      isDarkMode.value = mediaQuery.matches
+      document.documentElement.classList.toggle('dark', isDarkMode.value)
+    }
+  }
+  mediaQuery.addEventListener('change', handleThemeChange)
+
+  // 清理
+  onBeforeUnmount(() => {
+    mediaQuery.removeEventListener('change', handleThemeChange)
+  })
 })
 
 onBeforeUnmount(() => {
@@ -131,6 +164,23 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss">
+:global(:root) {
+  --purple-light: #f3e8ff;
+  --black: #1a1a1a;
+  --white: #fff;
+  --gray-2: #e5e7eb;
+  --gray-3: #d1d5db;
+  --tt-bg-color: #ffffff;
+}
+:global(.dark) {
+  --purple-light: #3b0764;
+  --black: #fff;
+  --white: #1a1a1a;
+  --gray-2: #374151;
+  --tt-bg-color: #1a1a1a;
+  --gray-3: #4b5563;
+}
+
 /* Basic editor styles */
 .tiptap {
   :first-child {
@@ -195,9 +245,9 @@ onBeforeUnmount(() => {
   }
 
   pre {
-    background: var(--black);
+    background: rgb(0, 0, 0);
     border-radius: 0.5rem;
-    color: var(--white);
+    color: rgb(0, 0, 255);
     font-family: 'JetBrainsMono', monospace;
     margin: 1.5rem 0;
     padding: 0.75rem 1rem;
