@@ -70,6 +70,7 @@
         </button>
       </div>
     </div>
+    <br/>
     <editor-content :editor="editor" />
   </div>
 </template>
