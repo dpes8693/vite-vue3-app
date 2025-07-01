@@ -23,7 +23,7 @@
         <!-- Format Group -->
         <div class="toolbar-group">
           <!-- Heading Dropdown -->
-          <select class="toolbar-select" :value="currentHeading" @change="setHeading($event.target.value)">
+          <select class="toolbar-select" :value="currentHeading" @change="setHeading(($event.target as HTMLSelectElement).value)">
             <option value="">Paragraph</option>
             <option value="1">Heading 1</option>
             <option value="2">Heading 2</option>
@@ -32,7 +32,7 @@
           </select>
 
           <!-- List Dropdown -->
-          <select class="toolbar-select" :value="currentList" @change="setList($event.target.value)">
+          <select class="toolbar-select" :value="currentList" @change="setList(($event.target as HTMLSelectElement).value)">
             <option value="">No List</option>
             <option value="bulletList">Bullet List</option>
             <option value="orderedList">Ordered List</option>
@@ -143,7 +143,7 @@
         <!-- Image Upload Group -->
         <div class="toolbar-group">
           <input ref="imageInput" type="file" accept="image/*" style="display: none" @change="handleImageUpload">
-          <button class="toolbar-button" @click="$refs.imageInput?.click()" title="Add Image">
+          <button class="toolbar-button" @click="($refs.imageInput as HTMLInputElement | undefined)?.click()" title="Add Image">
             📷 Add
           </button>
         </div>
@@ -212,12 +212,12 @@
 </template>
 
 <script setup lang="ts">
+import type { CSSProperties } from 'vue'
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
 import TaskItem from '@tiptap/extension-task-item'
-import TaskList from '@tiptap/extension-task-list'
 import TextAlign from '@tiptap/extension-text-align'
 import Typography from '@tiptap/extension-typography'
 import Highlight from '@tiptap/extension-highlight'
@@ -229,7 +229,7 @@ import Link from '@tiptap/extension-link'
 
 // Reactive data
 const toolbarRef = ref<HTMLElement>()
-const imageInput = ref<HTMLInputElement>()
+const imageInput = ref<HTMLInputElement | null>(null)
 const linkUrl = ref('')
 const isDarkMode = ref(false)
 const mobileView = ref<'main' | 'highlighter' | 'link'>('main')
@@ -238,14 +238,14 @@ const windowSize = ref({ height: window.innerHeight, width: window.innerWidth })
 // Computed properties
 const isMobile = computed(() => windowSize.value.width < 768)
 
-const toolbarStyle = computed(() => {
+const toolbarStyle = computed<CSSProperties>(() => {
   if (isMobile.value) {
     return {
       position: 'fixed',
-      bottom: '0',
-      left: '0',
-      right: '0',
-      zIndex: '1000'
+      bottom: 0,
+      left: 0,
+      right: 0,
+      zIndex: 1000
     }
   }
   return {}
@@ -319,13 +319,13 @@ const setHeading = (level: string) => {
   if (level === '') {
     editor.value.chain().focus().setParagraph().run()
   } else {
-    editor.value.chain().focus().toggleHeading({ level: parseInt(level) }).run()
+    // 轉型為 Level 型別 (1|2|3|4)
+    editor.value.chain().focus().toggleHeading({ level: parseInt(level) as 1 | 2 | 3 | 4 }).run()
   }
 }
 
 const setList = (type: string) => {
   if (!editor.value) return
-
   switch (type) {
     case 'bulletList':
       editor.value.chain().focus().toggleBulletList().run()
@@ -333,17 +333,11 @@ const setList = (type: string) => {
     case 'orderedList':
       editor.value.chain().focus().toggleOrderedList().run()
       break
-    case 'taskList':
-      editor.value.chain().focus().toggleTaskList().run()
-      break
     default:
-      // Remove any list
       if (editor.value.isActive('bulletList')) {
         editor.value.chain().focus().toggleBulletList().run()
       } else if (editor.value.isActive('orderedList')) {
         editor.value.chain().focus().toggleOrderedList().run()
-      } else if (editor.value.isActive('taskList')) {
-        editor.value.chain().focus().toggleTaskList().run()
       }
   }
 }
