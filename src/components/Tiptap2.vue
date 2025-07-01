@@ -36,7 +36,7 @@
             <option value="">No List</option>
             <option value="bulletList">Bullet List</option>
             <option value="orderedList">Ordered List</option>
-            <option value="taskList">Task List</option>
+            <!-- <option value="taskList">Task List</option>-->
           </select>
 
           <button class="toolbar-button" :class="{ active: editor?.isActive('blockquote') }"
@@ -288,7 +288,7 @@ const editor = useEditor({
       types: ['heading', 'paragraph'],
     }),
     Underline,
-    TaskList,
+    //TaskList,
     TaskItem.configure({
       nested: true,
     }),
