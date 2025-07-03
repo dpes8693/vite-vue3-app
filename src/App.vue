@@ -3,10 +3,18 @@
     <div class="floating-buttons">
       <button :class="{ active: mode === 1 }" @click="onClick(1)">富文本模式</button>
       <button :class="{ active: mode === 2 }" @click="onClick(2)">無頭模式</button>
+      <button :class="{ active: mode === 3 }" @click="onClick(3)">Notion模式</button>
     </div>
-    <br/>
-    <tiptap2 v-if="mode === 1" />
-    <tiptap v-if="mode === 2" />
+    <div>
+      <h2>[tip-tap editor demo]</h2>
+    </div>
+    <br />
+    <tiptap2 v-show="mode === 1" />
+    <tiptap v-show="mode === 2" />
+    <div v-show="mode === 3" class="notion-mode">
+      <a href="https://github.com/CafeinoDev/tiptap-notion" target="_blank">source react+tip-tap</a>
+      <iframe src="https://cafeinodev.github.io/tiptap-notion/" frameborder="0"></iframe>
+    </div>
   </div>
 </template>
 
@@ -21,7 +29,17 @@ const onClick = (v: number) => {
 }
 </script>
 
-<style>
+<style lang="scss">
+.notion-mode {
+  display: flex;
+  flex-direction: column;
+
+  iframe {
+    height: 70dvh;
+    width: 90dvh;
+  }
+}
+
 .floating-buttons {
   position: fixed;
   top: 16px;
@@ -30,6 +48,7 @@ const onClick = (v: number) => {
   display: flex;
   gap: 8px;
 }
+
 .floating-buttons button.active {
   background: #1976d2;
   color: #fff;
